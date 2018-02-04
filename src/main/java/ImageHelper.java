@@ -16,13 +16,34 @@ public class ImageHelper {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int p = image.getRGB(x, y);
-
-                int a = (p >> 24) & 0xff;
-                int r = (p >> 16) & 0xff;
-                int g = (p >> 8) & 0xff;
                 int b = p & 0xff;
-
                 newImage.setRGB(x, y, b);
+            }
+        }
+        return newImage;
+    }
+    public BufferedImage getRedMatrix(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage newImage = new BufferedImage(width, height, image.getType());
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int p = image.getRGB(x, y);
+                int r = (p >> 16) & 0xff;
+                newImage.setRGB(x, y, r);
+            }
+        }
+        return newImage;
+    }
+    public BufferedImage getGreenMatrix(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage newImage = new BufferedImage(width, height, image.getType());
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int p = image.getRGB(x, y);
+                int g = (p >> 8) & 0xff;
+                newImage.setRGB(x, y, g);
             }
         }
         return newImage;
@@ -68,5 +89,43 @@ public class ImageHelper {
             System.out.println();
         }
     }
+
+    public BufferedImage createImage(double[][] redPart, double[][] greenPart, double[][] bluePart, BufferedImage originalImage) throws Exception {
+        BufferedImage image = new BufferedImage(originalImage.getHeight(), originalImage.getWidth(), originalImage.getType());
+        int[][] newRedPart = arrayToByte(redPart);
+        int[][] newGreenPart = arrayToByte(greenPart);
+        int[][] newBluePart = arrayToByte(bluePart);
+
+        for (int y = 0; y < newRedPart.length; y++) {
+            for (int x = 0; x < newRedPart[0].length; x++) {
+                Color pixel = null;
+
+                pixel = new Color(newRedPart[y][x], newGreenPart[y][x], newBluePart[y][x]);
+                try {
+                    image.setRGB(x, y, pixel.getRGB());
+                }catch (Exception j){
+                    throw new Exception("vdfv");
+                }
+            }
+        }
+
+        return image;
+    }
+    private static int[][] arrayToByte(double[][] array) {
+        int[][] res = new int[array.length][array[0].length];
+
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[0].length; j++) {
+                if (array[i][j] < 0)
+                    res[i][j] = 0;
+                else if (array[i][j] > 255)
+                    res[i][j] = 255;
+                else
+                    res[i][j] = (int) array[i][j];
+            }
+        }
+        return res;
+    }
+
 
 }
