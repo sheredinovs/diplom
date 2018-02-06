@@ -1,5 +1,6 @@
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         BufferedImage image = imageLoader.loadImage("/Users/kadyr/Desktop/im1.jpg");
+        byte[] message = new byte[]{0, 1, 1, 1, 0, 0, 1,0};
 
         BufferedImage blueMatrix = imageHelper.getBlueMatrix(image);
         BufferedImage redMatrix = imageHelper.getRedMatrix(image);
@@ -35,9 +37,19 @@ public class Main {
             chipher.compute(mass);
         }
 
+        for(int i = 0; i < message.length; i++){
+            chipher.chipher(dctBlocks.get(i), message[i]);
+        }
+
         List<double[][]> res = new ArrayList<>();
         for(double[][] mass : dctBlocks){
             res.add(dctUtil.idcp(mass));
+        }
+
+
+        List<Byte> out = new ArrayList<>();
+        for (double[][] re : res) {
+            out.add(chipher.compute(re));
         }
 
         setBlocks(arr, res);
@@ -47,8 +59,10 @@ public class Main {
         imageLoader.writeImage(newImage, "/Users/kadyr/Desktop/im6_b.jpg");
         System.out.println(dctBlocks.get(0)[4][5]);
         System.out.println(dctBlocks.get(0)[5][4]);
-    }
 
+
+        compareResult(message, out);
+    }
 
 
     public static void setBlocks(double[][] array, java.util.List<double[][]> list) {
@@ -65,5 +79,17 @@ public class Main {
                     }
                 indBlock++;
             }
+    }
+
+    public static void compareResult(byte[] input, List<Byte> output){
+        System.out.println(Arrays.toString(input));
+        System.out.println(input.length);
+        int err = 0;
+        for(byte i=0; i < input.length; i++){
+            if(input[i] != output.get(i)){
+                err++;
+            }
+        }
+        System.out.println("Погрешность = " + (err * 100 / input.length));
     }
 }
