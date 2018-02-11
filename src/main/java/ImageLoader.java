@@ -28,7 +28,7 @@ public class ImageLoader {
         final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
         JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
         jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        jpegParams.setCompressionQuality(0.75f);
+        jpegParams.setCompressionQuality(1f);
         try {
             writer.setOutput(new FileImageOutputStream(new File(path)));
             writer.write(null, new IIOImage(image, null, null), jpegParams);

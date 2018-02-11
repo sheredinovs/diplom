@@ -26,9 +26,11 @@ public class Main {
                 message[i] = 0;
         }
 
-        double[][] blueMatrixArray = imageHelper.convertToBlueArray(image);
-        double[][] redMatrixArray = imageHelper.convertToRedArray(image);
-        double[][] greenMatrixArray = imageHelper.convertToGreenArray(image);
+
+        List<double[][]> pixels = imageHelper.convertToArray(image);
+        double[][] blueMatrixArray = pixels.get(2);
+        double[][] redMatrixArray = pixels.get(0);
+        double[][] greenMatrixArray = pixels.get(1);
 
 
 
@@ -52,8 +54,13 @@ public class Main {
         }
 
 
+        List<double[][]> resDct = new ArrayList<>();
+        for(double[][] mass : res){
+            resDct.add(dctUtil.dcp(mass));
+        }
+
         List<Byte> out = new ArrayList<>();
-        for (double[][] re : res) {
+        for (double[][] re : resDct) {
             out.add(chipher.compute(re));
         }
 
@@ -72,7 +79,7 @@ public class Main {
     public static List<Byte> getMessage(){
         BufferedImage image = imageLoader.loadImage("/Users/kadyr/Desktop/im6_b.jpg");
 
-        double[][] arr = imageHelper.convertToBlueArray(image);
+        double[][] arr = imageHelper.convertToArray(image).get(2);
 
         List<double[][]> blosks = imageHelper.getBlocks(arr);
         //imageHelper.showAllBlocks(blosks);

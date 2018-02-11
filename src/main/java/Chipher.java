@@ -4,17 +4,17 @@
 public class Chipher {
     public static final int THRESHOLD = 25;
 
-    public static final int FIRST_COEFF = 4;
-    public static final int SECOND_COEFF = 5;
+    public static final int FIRST_COEFF = 3;
+    public static final int SECOND_COEFF = 2;
 
     public byte compute(double[][] mass){
-        if(mass[FIRST_COEFF][SECOND_COEFF] - mass[SECOND_COEFF][FIRST_COEFF] > 0){
-            System.out.println("извлечение для 0  " + mass[FIRST_COEFF][SECOND_COEFF]);
+        if(Math.abs(mass[FIRST_COEFF][SECOND_COEFF]) - Math.abs(mass[SECOND_COEFF][FIRST_COEFF]) < 0){
+            System.out.println("извлечение для 1  " + (Math.abs(mass[FIRST_COEFF][SECOND_COEFF]) - Math.abs(mass[SECOND_COEFF][FIRST_COEFF])));
             return 1;
         }
 
-        else if(mass[FIRST_COEFF][SECOND_COEFF] - mass[SECOND_COEFF][FIRST_COEFF] < 0){
-            System.out.println("извлечение для 1  " + mass[FIRST_COEFF][SECOND_COEFF]);
+        else if(Math.abs(mass[FIRST_COEFF][SECOND_COEFF]) - Math.abs(mass[SECOND_COEFF][FIRST_COEFF]) > 0){
+            System.out.println("извлечение для 0  " + (Math.abs(mass[FIRST_COEFF][SECOND_COEFF]) - Math.abs(mass[SECOND_COEFF][FIRST_COEFF])));
             return 0;
         }
         return -1;
@@ -22,7 +22,9 @@ public class Chipher {
 
     public double[][] chipher(double[][] mass, byte l){
         if(l == 1){
-            if(mass[FIRST_COEFF][SECOND_COEFF] - mass[SECOND_COEFF][FIRST_COEFF] < (0 - THRESHOLD)){
+            if(Math.abs(mass[FIRST_COEFF][SECOND_COEFF]) - Math.abs(mass[SECOND_COEFF][FIRST_COEFF]) < (- THRESHOLD)){
+                System.out.println("погружение  для 1 " + mass[FIRST_COEFF][SECOND_COEFF] + "   "
+                        + mass[FIRST_COEFF][SECOND_COEFF] +  "   " + mass[SECOND_COEFF][FIRST_COEFF]);
                 return mass;
             }
             else {
@@ -31,7 +33,7 @@ public class Chipher {
 
 
 
-                mass[FIRST_COEFF][SECOND_COEFF] = (-1 - THRESHOLD) - mass[FIRST_COEFF][SECOND_COEFF] - mass[SECOND_COEFF][FIRST_COEFF];
+                mass[SECOND_COEFF][FIRST_COEFF] = Math.signum(mass[SECOND_COEFF][FIRST_COEFF]) * THRESHOLD;
 
 
 
@@ -39,7 +41,9 @@ public class Chipher {
             }
         }
         else if(l == 0){
-            if(mass[FIRST_COEFF][SECOND_COEFF] - mass[SECOND_COEFF][FIRST_COEFF] > THRESHOLD){
+            if(Math.abs(mass[FIRST_COEFF][SECOND_COEFF]) - Math.abs(mass[SECOND_COEFF][FIRST_COEFF]) > THRESHOLD){
+                System.out.println("погружение  для 0 " + mass[FIRST_COEFF][SECOND_COEFF] + "   "
+                        + mass[FIRST_COEFF][SECOND_COEFF] +  "   " + mass[SECOND_COEFF][FIRST_COEFF]);
                 return mass;
             }
             else {
@@ -48,8 +52,7 @@ public class Chipher {
 
 
 
-
-                mass[FIRST_COEFF][SECOND_COEFF] = (THRESHOLD + 1) + (mass[FIRST_COEFF][SECOND_COEFF] - mass[SECOND_COEFF][FIRST_COEFF]);
+                mass[FIRST_COEFF][SECOND_COEFF] = Math.signum(mass[FIRST_COEFF][SECOND_COEFF]) * THRESHOLD;
 
 
 
@@ -59,4 +62,10 @@ public class Chipher {
         }
         return mass;
     }
+
+
+//    public double rond(double value){
+//        BigDecimal decimal = BigDecimal.valueOf(value);
+//        decimal.setScale(5, BigDecimal.ROUND_HALF_UP);
+//    }
 }

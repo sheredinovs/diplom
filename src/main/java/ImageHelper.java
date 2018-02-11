@@ -26,38 +26,31 @@ public class ImageHelper {
         return list;
     }
 
-    public double[][] convertToBlueArray(BufferedImage image){
-        double[][] result = new double[image.getWidth()][image.getHeight()];
-        for(int i = 0; i < image.getWidth(); i++)
-            for(int j = 0; j < image.getHeight(); j++) {
-                Color pixel = new Color(image.getRGB(i, j));
-
-                result[i][j] = pixel.getBlue();
+    public List<double[][]> convertToArray(BufferedImage image){
+        int h = image.getHeight();
+        int w = image.getWidth();
+        double[][] resultBlue = new double[h][w];
+        double[][] resultRed = new double[h][w];
+        double[][] resultGreen = new double[h][w];
+        System.out.println(resultBlue.length + "   " + resultBlue[0].length);
+        List<double[][]> res = new ArrayList<>();
+        for(int i = 0; i < h; i++)
+            for(int j = 0; j < w; j++) {
+                try {
+                    Color pixel;
+                    pixel = new Color(image.getRGB(j, i));
+                    resultBlue[i][j] = pixel.getBlue();
+                    resultRed[i][j] = pixel.getRed();
+                    resultGreen[i][j] = pixel.getGreen();
+                }catch (Exception e){
+                    System.out.println(e.getMessage());;
+                }
             }
-        return result;
-    }
+        res.add(resultRed);
+        res.add(resultGreen);
+        res.add(resultBlue);
 
-
-    public double[][] convertToRedArray(BufferedImage image){
-        double[][] result = new double[image.getWidth()][image.getHeight()];
-        for(int i = 0; i < image.getWidth(); i++)
-            for(int j = 0; j < image.getHeight(); j++) {
-                Color pixel = new Color(image.getRGB(i, j));
-
-                result[i][j] = pixel.getRed();
-            }
-        return result;
-    }
-
-    public double[][] convertToGreenArray(BufferedImage image){
-        double[][] result = new double[image.getWidth()][image.getHeight()];
-        for(int i = 0; i < image.getWidth(); i++)
-            for(int j = 0; j < image.getHeight(); j++) {
-                Color pixel = new Color(image.getRGB(i, j));
-
-                result[i][j] = pixel.getGreen();
-            }
-        return result;
+        return res;
     }
 
     public void showImageMatrix(double[][] arr){
@@ -74,7 +67,7 @@ public class ImageHelper {
     }
 
     public BufferedImage createImage(double[][] redPart, double[][] greenPart, double[][] bluePart, BufferedImage originalImage) throws Exception {
-        BufferedImage image = new BufferedImage(originalImage.getHeight(), originalImage.getWidth(), originalImage.getType());
+        BufferedImage image = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(),originalImage.getType());
         int[][] newRedPart = arrayToByte(redPart);
         int[][] newGreenPart = arrayToByte(greenPart);
         int[][] newBluePart = arrayToByte(bluePart);
@@ -84,11 +77,7 @@ public class ImageHelper {
                 Color pixel = null;
 
                 pixel = new Color(newRedPart[y][x], newGreenPart[y][x], newBluePart[y][x]);
-                try {
-                    image.setRGB(x, y, pixel.getRGB());
-                }catch (Exception j){
-                    throw new Exception("vdfv");
-                }
+                image.setRGB(x, y, pixel.getRGB());
             }
         }
 
