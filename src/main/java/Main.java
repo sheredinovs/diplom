@@ -2,47 +2,52 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
-/**
- * Created by kadyr on 04.02.2018.
- */
+
 public class Main {
     private static final ImageHelper imageHelper = new ImageHelper();
     private static final ImageLoader imageLoader = new ImageLoader();
     private static final DcpUtils dctUtil = new DcpUtils();
 
     public static void main(String[] args) throws Exception {
-        BufferedImage image = imageLoader.loadImage("/Users/kadyr/Desktop/im1.jpg");
-        byte[] message = new byte[]{0, 1, 1, 1, 0, 0, 1,0};
+        BufferedImage image = imageLoader.loadImage("/Users/kadyr/Desktop/1.jpg");
 
-        BufferedImage blueMatrix = imageHelper.getBlueMatrix(image);
-        BufferedImage redMatrix = imageHelper.getRedMatrix(image);
-        BufferedImage greenMatrix = imageHelper.getGreenMatrix(image);
+        System.out.println(image.getWidth());
+        System.out.println(image.getHeight());
+        byte[] message = new byte[28400];
+
+        new Random().nextBytes(message);
+        for(int i=0; i < message.length; i++){
+            if(message[i] % 2 == 0){
+                message[i] = 1;
+            }
+            else
+                message[i] = 0;
+        }
+
+        double[][] blueMatrixArray = imageHelper.convertToBlueArray(image);
+        double[][] redMatrixArray = imageHelper.convertToRedArray(image);
+        double[][] greenMatrixArray = imageHelper.convertToGreenArray(image);
 
 
-      //  imageLoader.writeImage(blueMatrix, "/Users/kadyr/Desktop/im6_b.jpg");
 
-        double[][] arr = imageHelper.convertToArray(image);
-
-        List<double[][]> blosks = imageHelper.getBlocks(arr);
-        //imageHelper.showAllBlocks(blosks);
+        List<double[][]> blosks = imageHelper.getBlocks(blueMatrixArray);
         List<double[][]> dctBlocks = new ArrayList<>();
         for(double[][] mass : blosks){
             dctBlocks.add(dctUtil.dcp(mass));
         }
-        imageHelper.showAllBlocks(dctBlocks);
+        imageHelper.showImageMatrix(dctBlocks.get(0));
 
         Chipher chipher = new Chipher();
-        for(double[][] mass : dctBlocks){
-            chipher.compute(mass);
-        }
 
+        List<double[][]> narr = new ArrayList<>();
         for(int i = 0; i < message.length; i++){
-            chipher.chipher(dctBlocks.get(i), message[i]);
+            narr.add(chipher.chipher(dctBlocks.get(i), message[i]));
         }
 
         List<double[][]> res = new ArrayList<>();
-        for(double[][] mass : dctBlocks){
+        for(double[][] mass : narr){
             res.add(dctUtil.idcp(mass));
         }
 
@@ -52,20 +57,41 @@ public class Main {
             out.add(chipher.compute(re));
         }
 
-        setBlocks(arr, res);
+        double[][] finalBlue = setBlocks(blueMatrixArray, res);
 
-        BufferedImage newImage = imageHelper.createImage(imageHelper.convertToArray(redMatrix), imageHelper.convertToArray(greenMatrix),
-                imageHelper.convertToArray(blueMatrix), image);
+        BufferedImage newImage = imageHelper.createImage(redMatrixArray, greenMatrixArray,
+                finalBlue, image);
+        System.out.println(newImage.getWidth());
+        System.out.println(newImage.getHeight());
         imageLoader.writeImage(newImage, "/Users/kadyr/Desktop/im6_b.jpg");
-        System.out.println(dctBlocks.get(0)[4][5]);
-        System.out.println(dctBlocks.get(0)[5][4]);
 
-
-        compareResult(message, out);
+        compareResult(message, getMessage());
     }
 
 
-    public static void setBlocks(double[][] array, java.util.List<double[][]> list) {
+    public static List<Byte> getMessage(){
+        BufferedImage image = imageLoader.loadImage("/Users/kadyr/Desktop/im6_b.jpg");
+
+        double[][] arr = imageHelper.convertToBlueArray(image);
+
+        List<double[][]> blosks = imageHelper.getBlocks(arr);
+        //imageHelper.showAllBlocks(blosks);
+        List<double[][]> dctBlocks = new ArrayList<>();
+        for(double[][] mass : blosks){
+            dctBlocks.add(dctUtil.dcp(mass));
+        }
+        imageHelper.showImageMatrix(dctBlocks.get(0));
+
+        Chipher chipher = new Chipher();
+
+        List<Byte> out = new ArrayList<>();
+        for (double[][] re : dctBlocks) {
+            out.add(chipher.compute(re));
+        }
+        return out;
+    }
+
+    public static double[][] setBlocks(double[][] array, List<double[][]> list) {
         int rows = array.length / 8;
         int cols = array[0].length / 8;
         int indBlock = 0;
@@ -79,13 +105,14 @@ public class Main {
                     }
                 indBlock++;
             }
+            return array;
     }
 
     public static void compareResult(byte[] input, List<Byte> output){
         System.out.println(Arrays.toString(input));
         System.out.println(input.length);
         int err = 0;
-        for(byte i=0; i < input.length; i++){
+        for(int i=0; i < input.length; i++){
             if(input[i] != output.get(i)){
                 err++;
             }

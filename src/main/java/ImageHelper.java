@@ -9,46 +9,6 @@ import java.util.List;
  */
 public class ImageHelper {
 
-    public BufferedImage getBlueMatrix(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        BufferedImage newImage = new BufferedImage(width, height, image.getType());
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int p = image.getRGB(x, y);
-                int b = p & 0xff;
-                newImage.setRGB(x, y, b);
-            }
-        }
-        return newImage;
-    }
-    public BufferedImage getRedMatrix(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        BufferedImage newImage = new BufferedImage(width, height, image.getType());
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int p = image.getRGB(x, y);
-                int r = (p >> 16) & 0xff;
-                newImage.setRGB(x, y, r);
-            }
-        }
-        return newImage;
-    }
-    public BufferedImage getGreenMatrix(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        BufferedImage newImage = new BufferedImage(width, height, image.getType());
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int p = image.getRGB(x, y);
-                int g = (p >> 8) & 0xff;
-                newImage.setRGB(x, y, g);
-            }
-        }
-        return newImage;
-    }
-
     public List<double[][]> getBlocks(double[][] blueMAtrix){
         int rows = blueMAtrix.length / 8;
         int cols = blueMAtrix[0].length / 8;
@@ -66,13 +26,36 @@ public class ImageHelper {
         return list;
     }
 
-    public double[][] convertToArray(BufferedImage image){
+    public double[][] convertToBlueArray(BufferedImage image){
         double[][] result = new double[image.getWidth()][image.getHeight()];
         for(int i = 0; i < image.getWidth(); i++)
             for(int j = 0; j < image.getHeight(); j++) {
                 Color pixel = new Color(image.getRGB(i, j));
 
                 result[i][j] = pixel.getBlue();
+            }
+        return result;
+    }
+
+
+    public double[][] convertToRedArray(BufferedImage image){
+        double[][] result = new double[image.getWidth()][image.getHeight()];
+        for(int i = 0; i < image.getWidth(); i++)
+            for(int j = 0; j < image.getHeight(); j++) {
+                Color pixel = new Color(image.getRGB(i, j));
+
+                result[i][j] = pixel.getRed();
+            }
+        return result;
+    }
+
+    public double[][] convertToGreenArray(BufferedImage image){
+        double[][] result = new double[image.getWidth()][image.getHeight()];
+        for(int i = 0; i < image.getWidth(); i++)
+            for(int j = 0; j < image.getHeight(); j++) {
+                Color pixel = new Color(image.getRGB(i, j));
+
+                result[i][j] = pixel.getGreen();
             }
         return result;
     }
