@@ -35,36 +35,18 @@ public class Main {
 
 
         List<double[][]> blosks = imageHelper.getBlocks(blueMatrixArray);
-        List<double[][]> dctBlocks = new ArrayList<>();
-        for(double[][] mass : blosks){
-            dctBlocks.add(dctUtil.dcp(mass));
-        }
-        imageHelper.showImageMatrix(dctBlocks.get(0));
+
 
         Chipher chipher = new Chipher();
 
-        List<double[][]> narr = new ArrayList<>();
+        List<double[][]> blokcWithCoeff = new ArrayList<>();
         for(int i = 0; i < message.length; i++){
-            narr.add(chipher.chipher(dctBlocks.get(i), message[i]));
-        }
-
-        List<double[][]> res = new ArrayList<>();
-        for(double[][] mass : narr){
-            res.add(dctUtil.idcp(mass));
+            blokcWithCoeff.add(chipher.smartInsert(blosks.get(i), message[i]));
         }
 
 
-        List<double[][]> resDct = new ArrayList<>();
-        for(double[][] mass : res){
-            resDct.add(dctUtil.dcp(mass));
-        }
-
-        List<Byte> out = new ArrayList<>();
-        for (double[][] re : resDct) {
-            out.add(chipher.compute(re));
-        }
-
-        double[][] finalBlue = setBlocks(blueMatrixArray, res);
+        double[][] finalBlue = setBlocks(blueMatrixArray, blokcWithCoeff);
+       // System.exit(0);
 
         BufferedImage newImage = imageHelper.createImage(redMatrixArray, greenMatrixArray,
                 finalBlue, image);
@@ -79,20 +61,13 @@ public class Main {
     public static List<Byte> getMessage(){
         BufferedImage image = imageLoader.loadImage("/Users/kadyr/Desktop/im6_b.jpg");
 
-        double[][] arr = imageHelper.convertToArray(image).get(2);
-
-        List<double[][]> blosks = imageHelper.getBlocks(arr);
-        //imageHelper.showAllBlocks(blosks);
-        List<double[][]> dctBlocks = new ArrayList<>();
-        for(double[][] mass : blosks){
-            dctBlocks.add(dctUtil.dcp(mass));
-        }
-        imageHelper.showImageMatrix(dctBlocks.get(0));
+        double[][] blueMatrix = imageHelper.convertToArray(image).get(2);
+        List<double[][]> blosks = imageHelper.getBlocks(blueMatrix);
 
         Chipher chipher = new Chipher();
 
         List<Byte> out = new ArrayList<>();
-        for (double[][] re : dctBlocks) {
+        for (double[][] re : blosks) {
             out.add(chipher.compute(re));
         }
         return out;
